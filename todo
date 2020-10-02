@@ -1,0 +1,48 @@
+sxd revived todo list 2.0 because some people are retards and cant back up files properly
+
+    - Focus on stability and write the code first before making it look pretty.
+    - Dont trust any user inputs, so check it (regex etc...).
+    - Reuse parts of the unfinished sxd rewrite because it has proven itself
+        ->  Also makes sxd2 and 3 commands compatible with the rewrite.
+    - Automatic updater over github (Things with checksums or something)
+
+    - Data collection
+    -> Really pick anything that is able to help with developing the bot and notify the user about it. Make it also able for the user to opt out of it.
+
+
+    Suggestions for style:
+        -> theres a call where it looks like the bot is writing, use that i guess when its processing stuff
+
+    Oh yeah also the bot should create a .json file when being run for the first time because github 
+
+--    Commands    --
+    -   starboard                       Starboard settings shortcut and on/off switch
+    -+   prefix                          Take a guess
+    -+   uptime                          Display bot uptime
+    -   about                           Show a basic description of the bot and show credits (anyone who helped contribute to the bot.)
+    -   update                          Runs the update function if the master has been updated (owner) 
+    -+   eval                            Run javascript (owner)
+    -   bban                            Prevent certain people from using the bot (owner)
+    -   ignore                          Ignore text channels (maybe a failsave later if you ignore all channels)
+    -   feedback                        Make users able to send feedback directly into the owners DM's
+    -   help                            Show users around the commands of the bot, make this user friendly   
+    -+   ping                            Pong
+    -   purge                           Deletes up to 100 messages from the text channel its being run in.
+    -   reset                           Wipe all custom guild settings, can be run inside an ignored text channel 
+    -   mute                            Mutes people until unmuted or for a specified amount of time.
+    -   config                          Settings command.
+        -> prefix
+        -> starboard                    (channel, emote, emote amount, time, word filter)
+        -> autotempconv                 Automatic temperature conversion from Celsius to Fahrenheit and vise versa.
+        -> color                        Custom colors for the bot
+    -   filter                          Filter chat for any bad words.
+    -   keypad                          Fun for users, when the bot starts generate a random number from 0001-9999 and assign it to a easter egg.
+    -   version                         Shows current version of the bot and also checks if an update is available (but dosent download it.)
+    +   ticketsystem/issuetracker       https://en.wikipedia.org/wiki/Issue_tracking_system
+    +   filehosting                     Host files for a period of time, after upload assign a ID that can be requested from the bot to download it
+    +   play mp3 files                  use the filehosting thing but integrate it with a music command
+    +   github repo                     When a user posts a github repo link, fetch it and display stats etc..
+
+
+
+
