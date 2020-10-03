@@ -1,13 +1,13 @@
 //TODO: Finish Temperature conversion, fuck the embeds (they dont work), make sure commands can run.
 const discord = require("discord.js");
 const cooldowns = new discord.Collection();
-module.exports.run = async (bot, discord, db, sdb, message) => {
+
+module.exports.run = async (bot, discord, db, message, sdb) => {
     if (message.author.bot) return;
     if (message.author.bot || message.channel.type !== 'text') return;
 
-    const config = db.prepare(`SELECT * FROM guild_settings WHERE guild_id = ?`).get(message.guild.id);
-
-    if (!config) { return await db.prepare(`INSERT INTO guild_settings (guild_id) VALUES (${message.guild.id})`).run(); }
+    const config = db.prepare(`SELECT * FROM guild_settings WHERE guildID = ?`).get(message.guild.id); //Get guild settings
+    if (!config) { return await db.prepare(`INSERT INTO guild_settings (guildID) VALUES (${message.guild.id})`).run(); }
 
     async function commandHandler(message, config) {
         if (!message.content.startsWith(config.prefix)) return;
@@ -25,7 +25,7 @@ module.exports.run = async (bot, discord, db, sdb, message) => {
             return message.channel.send(embed);
         }
 
-        if (!cooldowns.has(command.name)) {
+        if (!cooldowns.has(command.name)) { //Cooldown check
             cooldowns.set(command.name, new discord.Collection());
         }
 
@@ -41,7 +41,7 @@ module.exports.run = async (bot, discord, db, sdb, message) => {
                 let embed = new discord.MessageEmbed()
                     .setAuthor("Woah, hold on there!")
                     .setDescription(`Please Wait ${timeLeft.toFixed(1)} more second(s) before reusing the \`${command.name}\` command.`)
-                return message.channel.send(embed)
+                return message.channel.send(embed);
             }
         }
 
@@ -57,7 +57,7 @@ module.exports.run = async (bot, discord, db, sdb, message) => {
     }
 
     async function optionalFunctions(message, config) {
-        if (config.autoTempConv == 1) {
+        if (config.autoTempConv == 1) {     //Automatic temperature conversion in the chat
             let messageSplit = message.content.split(" ");
 
             if (message.content.includes("°C")) {
@@ -72,21 +72,22 @@ module.exports.run = async (bot, discord, db, sdb, message) => {
                 for (x = 0; x < messageSplit.length; x++) {
                     if (messageSplit[x].includes("°F")) tempInfo = messageSplit[x].slice(0, -2);
                 }
-                let temperature = Math.round(((tempInfo - 32) / 1.8) * 100) / 100
+                let temperature = Math.round(((tempInfo - 32) / 1.8) * 100) / 100;
                 message.channel.send(`${tempInfo} Fahrenheit equals ${temperature} Celsius`);
             }
         }
 
 
-        if (config.starboard == 1) {
+        if (config.starboard == 1) {    //if starboard enabled check how long message will be logged and add it into the memory database
+            let starboardConfig = db.prepare(`SELECT * FROM starboard_settings WHERE guildID = ?`).get(message.guild.id);
+            if(!starboardConfig) {return await db.prepare(`INSERT INTO starboard_settings (guildID) VALUES (${message.guild.id})`).run();}
             let waitFor = config.waitFor * 60000;
             sdb.prepare(`INSERT INTO messages (id, waitFor) VALUES (${message.id}, ${waitFor})`).run();
 
             async function deleter(message) {
-                sdb.prepare(`DELETE FROM messages WHERE id='${message.id}'`).run();
+                sdb.prepare(`DELETE FROM messages WHERE messageID='${message.id}'`).run();
             }
-
-            setTimeout(function() {deleter(message)} , waitFor)
+            setTimeout(function () { deleter(message) }, waitFor);
         }
     }
 
