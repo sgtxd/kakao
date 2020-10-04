@@ -16,6 +16,7 @@ sxd revived todo list 2.0 because some people are retards and cant back up files
     Oh yeah also the bot should create a .json file when being run for the first time because github 
 
 --    Commands    --
+    -   spam                            Spamfiltering see .equals https://discord.js.org/#/docs/main/stable/class/Message?scrollTo=id
     -   starboard                       Starboard settings shortcut and on/off switch
     -+   prefix                          Take a guess
     -+   uptime                          Display bot uptime

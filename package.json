@@ -1,16 +1,19 @@
 {
   "name": "sxd",
-  "version": "0",
-  "description": "sxd is a small private discord bot with no real purpose.",
+  "version": "1.0.0",
+  "description": "sxd is a small private discord bot with no real purpose",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"There is no test\" && exit 0"
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/sgtxd/kakao.git"
   },
   "author": "sgtxd",
   "license": "ISC",
-  "dependencies": {
-    "better-sqlite3": "^7.1.1",
-    "colors": "^1.4.0",
-    "discord.js": "^12.3.1"
-  }
+  "bugs": {
+    "url": "https://github.com/sgtxd/kakao/issues"
+  },
+  "homepage": "https://github.com/sgtxd/kakao#readme"
 }

@@ -8,9 +8,9 @@ const fs = require("fs");
 const package = require("./package.json");
 const { exit } = require("process");
 const bot = new discord.Client();
-const sdb = new sql(":memory:");
+const sdb = new sql(":memory:", { verbose: console.log });
 
-sdb.prepare(`CREATE TABLE "messages" (	"messageID"	INTEGER UNIQUE,	PRIMARY KEY("messageID"));`).run; //Database temporarily holds messageIDs for the starboard
+sdb.prepare(`CREATE TABLE "messages" (	"messageID"	INTEGER UNIQUE,	PRIMARY KEY("messageID"));`).run(); //Database temporarily holds messageIDs for the starboard
 
 colors.setTheme({
     warn: `yellow`,
@@ -49,10 +49,11 @@ for (const file of evfile) {
 console.log("All commands and events that have been found are loaded!".verbose);
 
 if (fs.existsSync("./config.json")) {
-    let config = require("./config.json")
-    if(config.login == false) return console.log("Login disabled due to config.".warn)
+    let config = require("./config.json");
+    if(config.login == false) return console.log("Login disabled due to config.".warn);
+    if(config.token == "") { console.log("No token specified".error); process.exit(1); }
     try {
-        bot.login(config.token)
+        bot.login(config.token);
     } catch (error) {
         console.error(`${error}`.error);
     }
@@ -66,15 +67,5 @@ if (fs.existsSync("./config.json")) {
     let data = JSON.stringify(configFile);
     fs.writeFileSync(`./config.json`, data);
     console.log("Make sure the token field on the config.json is populated with the bot's token and login is set to true!".error);
-    process.exit(0);
-}
-/*
-if (config.token) {     //Make sure token exists and login equals true before trying to login
-    if (config.login == false) return console.log("Login disabled due to config.".warn);
-    try {
-        bot.login(config.token);
-    } catch (error) {
-        console.error(`${error}`.error);
-    }
-} else throw new Error("No token found!".error);
-*/
+    process.exit(1);
+};

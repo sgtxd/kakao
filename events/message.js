@@ -81,8 +81,8 @@ module.exports.run = async (bot, discord, db, message, sdb) => {
         if (config.starboard == 1) {    //if starboard enabled check how long message will be logged and add it into the memory database
             let starboardConfig = db.prepare(`SELECT * FROM starboard_settings WHERE guildID = ?`).get(message.guild.id);
             if(!starboardConfig) {return await db.prepare(`INSERT INTO starboard_settings (guildID) VALUES (${message.guild.id})`).run();}
-            let waitFor = config.waitFor * 60000;
-            sdb.prepare(`INSERT INTO messages (id, waitFor) VALUES (${message.id}, ${waitFor})`).run();
+            let waitFor = starboardConfig.waitFor * 60000;
+            sdb.prepare(`INSERT INTO messages (messageID) VALUES (${message.id})`).run();
 
             async function deleter(message) {
                 sdb.prepare(`DELETE FROM messages WHERE messageID='${message.id}'`).run();
