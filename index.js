@@ -8,7 +8,7 @@ const fs = require("fs");
 const package = require("./package.json");
 const { exit } = require("process");
 const bot = new discord.Client();
-const sdb = new sql(":memory:", { verbose: console.log });
+const sdb = new sql(":memory:");
 
 sdb.prepare(`CREATE TABLE "messages" (	"messageID"	INTEGER UNIQUE,	PRIMARY KEY("messageID"));`).run(); //Database temporarily holds messageIDs for the starboard
 

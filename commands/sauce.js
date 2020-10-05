@@ -6,7 +6,7 @@ const sql = require("better-sqlite3")
 module.exports = {
     name: "sauce",
     description: "Finds some sauce.",
-    cooldown: 5,
+    cooldown: 1,
     guildOnly: false,
     args: true,
     usage: "<sauce>"
@@ -30,8 +30,7 @@ module.exports.run = async (bot, message, args, db, config) => {
     sauceScraper(sauce);
 
     async function sauceScraper(sauce) {
-
-        message.channel.send(`Searching nhentai for ${sauce}...`)
+        console.log(sauce);
 
         const browser = await puppeteer.launch();
         const page = await browser.newPage();
@@ -111,25 +110,25 @@ module.exports.run = async (bot, message, args, db, config) => {
 
         const config = db.prepare(`SELECT * FROM sauce WHERE id = ?`).get(sauce); //Get guild settings
         if (!config) {
-            db.prepare(`INSERT INTO sauce (id) VALUES (${sauce})`).run();
-            var a = title;
-            db.prepare(`UPDATE sauce SET title = '${a}' WHERE id = '${sauce}';`).run();
+            await db.prepare(`INSERT INTO sauce (id) VALUES (${sauce})`).run();
+            var a = title.replace(`'`, `"`);
+            await db.prepare(`UPDATE sauce SET title = '${a}' WHERE id = '${sauce}';`).run();
             var a = rawParodies.replace(/[A-Z0-9]/g, " ").replace(/  +/g, "/").split("/").slice(0, -1);
-            db.prepare(`UPDATE sauce SET parodies = '${a}' WHERE id = '${sauce}';`).run();
+            await db.prepare(`UPDATE sauce SET parodies = '${a}' WHERE id = '${sauce}';`).run();
             var a = rawCharacters.replace(/[A-Z0-9]/g, " ").replace(/  +/g, "/").split("/").slice(0, -1);
-            db.prepare(`UPDATE sauce SET characters = '${a}' WHERE id = '${sauce}';`).run();
+            await db.prepare(`UPDATE sauce SET characters = '${a}' WHERE id = '${sauce}';`).run();
             var a = rawTags.replace(/[A-Z0-9]/g, " ").replace(/  +/g, "/").split("/").slice(0, -1);
-            db.prepare(`UPDATE sauce SET tags = '${a}' WHERE id = '${sauce}';`).run();
+            await db.prepare(`UPDATE sauce SET tags = '${a}' WHERE id = '${sauce}';`).run();
             var a = rawArtists.replace(/[A-Z0-9]/g, " ").replace(/  +/g, "/").split("/").slice(0, -1)
-            db.prepare(`UPDATE sauce SET artists = '${a}' WHERE id = '${sauce}';`).run();
+            await db.prepare(`UPDATE sauce SET artists = '${a}' WHERE id = '${sauce}';`).run();
             var a = rawGroups.replace(/[A-Z0-9]/g, " ").replace(/  +/g, "/").split("/").slice(0, -1)
-            db.prepare(`UPDATE sauce SET groups = '${a}' WHERE id = '${sauce}';`).run();
+            await db.prepare(`UPDATE sauce SET groups = '${a}' WHERE id = '${sauce}';`).run();
             var a = rawlang.replace(/[A-Z0-9]/g, " ").replace(/  +/g, "/").split("/").slice(0, -1)
-            db.prepare(`UPDATE sauce SET languages = '${a}' WHERE id = '${sauce}';`).run();
+            await db.prepare(`UPDATE sauce SET languages = '${a}' WHERE id = '${sauce}';`).run();
             var a = rawCat.replace(/[A-Z0-9]/g, " ").replace(/  +/g, "/").split("/").slice(0, -1)
-            db.prepare(`UPDATE sauce SET categories = '${a}' WHERE id = '${sauce}';`).run();
+            await db.prepare(`UPDATE sauce SET categories = '${a}' WHERE id = '${sauce}';`).run();
             var a = pages
-            db.prepare(`UPDATE sauce SET pages = '${a}' WHERE id = '${sauce}';`).run();
+            await db.prepare(`UPDATE sauce SET pages = '${a}' WHERE id = '${sauce}';`).run();
         }
     }
 }

@@ -1,9 +1,7 @@
-//TODO: Finish Temperature conversion, fuck the embeds (they dont work), make sure commands can run.
 const discord = require("discord.js");
 const cooldowns = new discord.Collection();
 
 module.exports.run = async (bot, discord, db, message, sdb) => {
-    if (message.author.bot) return;
     if (message.author.bot || message.channel.type !== 'text') return;
 
     const config = db.prepare(`SELECT * FROM guild_settings WHERE guildID = ?`).get(message.guild.id); //Get guild settings
