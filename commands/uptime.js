@@ -1,4 +1,4 @@
-const discord = require("discord.js")
+const discord = require("discord.js");
 
 module.exports = {
     name: "uptime",
@@ -18,6 +18,6 @@ module.exports.run = async (bot, message, args, db, config) => {
     let embed = new discord.MessageEmbed()
         .setTitle(":desktop: Uptime")
         .setColor("WHITE")
-        .addField(`${bot.user.username} has been running for:`, uptime)
-    message.channel.send(embed)
+        .addField(`${bot.user.username} has been running for:`, uptime);
+    return message.channel.send(embed);
 }

@@ -1,0 +1,7 @@
+npm:
+discord.js
+better-sqlite3
+colors
+
+on the host system needed:
+chromium 

@@ -1,11 +1,12 @@
+//TODO: run commands over dms
 const discord = require("discord.js");
 const cooldowns = new discord.Collection();
 
 module.exports.run = async (bot, discord, db, message, sdb) => {
     if (message.author.bot || message.channel.type !== 'text') return;
 
-    const config = db.prepare(`SELECT * FROM guild_settings WHERE guildID = ?`).get(message.guild.id); //Get guild settings
-    if (!config) { return await db.prepare(`INSERT INTO guild_settings (guildID) VALUES (${message.guild.id})`).run(); }
+    const config = db.prepare('SELECT * FROM guild_settings WHERE guildID = ?').get(message.guild.id); //Get guild settings
+    if (!config) { return await db.prepare('INSERT INTO guild_settings (guildID) VALUES (?)').run(message.guild.id); }
 
     async function commandHandler(message, config) {
         if (!message.content.startsWith(config.prefix)) return;
@@ -17,9 +18,9 @@ module.exports.run = async (bot, discord, db, message, sdb) => {
 
         if (command.args && !args.length) {
             let embed = new discord.MessageEmbed()
-                .setColor(`WHITE`)
+                .setColor("WHITE")
                 .setAuthor("You haven't specified any of the required arguments!")
-                .setDescription(`The proper usage is: "${config.prefix}${cmdname} ${command.usage}"`)
+                .setDescription(`The proper usage is: "${config.prefix}${cmdname} ${command.usage}"`);
             return message.channel.send(embed);
         }
 
@@ -38,7 +39,7 @@ module.exports.run = async (bot, discord, db, message, sdb) => {
                 const timeLeft = (expirationTime - now) / 1000;
                 let embed = new discord.MessageEmbed()
                     .setAuthor("Woah, hold on there!")
-                    .setDescription(`Please Wait ${timeLeft.toFixed(1)} more second(s) before reusing the \`${command.name}\` command.`)
+                    .setDescription(`Please Wait ${timeLeft.toFixed(1)} more second(s) before reusing the \`${command.name}\` command.`);
                 return message.channel.send(embed);
             }
         }
@@ -49,8 +50,8 @@ module.exports.run = async (bot, discord, db, message, sdb) => {
         try {
             command.run(bot, message, args, db, config);
         } catch (error) {
-            console.log(`${error}`.error)
-            message.channel.send('Something happened');
+            console.log(`${error}`.error);
+            return message.channel.send('Something happened');
         }
     }
 
@@ -77,14 +78,15 @@ module.exports.run = async (bot, discord, db, message, sdb) => {
 
 
         if (config.starboard == 1) {    //if starboard enabled check how long message will be logged and add it into the memory database
-            let starboardConfig = db.prepare(`SELECT * FROM starboard_settings WHERE guildID = ?`).get(message.guild.id);
-            if(!starboardConfig) {return await db.prepare(`INSERT INTO starboard_settings (guildID) VALUES (${message.guild.id})`).run();}
+            let starboardConfig = db.prepare('SELECT * FROM starboard_settings WHERE guildID = ?').get(message.guild.id);
+            if(!starboardConfig) {return await db.prepare('INSERT INTO starboard_settings (guildID) VALUES (?)').run(message.guild.id);}
             let waitFor = starboardConfig.waitFor * 60000;
-            sdb.prepare(`INSERT INTO messages (messageID) VALUES (${message.id})`).run();
+            sdb.prepare('INSERT INTO messages (messageID) VALUES (?)').run(message.id);
 
             async function deleter(message) {
-                sdb.prepare(`DELETE FROM messages WHERE messageID='${message.id}'`).run();
+                sdb.prepare('DELETE FROM messages WHERE messageID= ?').run(message.id);
             }
+
             setTimeout(function () { deleter(message) }, waitFor);
         }
     }
@@ -92,7 +94,7 @@ module.exports.run = async (bot, discord, db, message, sdb) => {
     if (message.content == `<@!${bot.user.id}>`) {
         let embed = new discord.MessageEmbed()
             .setColor(`WHITE`)
-            .setAuthor(`My prefix here is "${config.prefix}"`)
+            .setAuthor(`My prefix here is "${config.prefix}"`);
         return message.channel.send(embed);
     }
 

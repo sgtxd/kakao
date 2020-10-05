@@ -1,4 +1,4 @@
-//TODO: Generate the config.json file if it dosent exist.
+//TODO: add consistency in the entire code, pls
 
 const discord = require("discord.js");
 const sql = require("better-sqlite3");

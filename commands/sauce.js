@@ -30,7 +30,6 @@ module.exports.run = async (bot, message, args, db, config) => {
     sauceScraper(sauce);
 
     async function sauceScraper(sauce) {
-        console.log(sauce);
 
         const browser = await puppeteer.launch();
         const page = await browser.newPage();

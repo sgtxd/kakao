@@ -10,6 +10,6 @@ module.exports = {
     args: true,
     usage: "<userid>"
 }
-module.exports.run = async (bot, message) => {
+module.exports.run = async (bot, message, args, db, config) => {
     //later
 }

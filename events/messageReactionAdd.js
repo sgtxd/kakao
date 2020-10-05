@@ -21,7 +21,7 @@ module.exports.run = async (bot, discord, db, MessageReaction, user, sdb) => {
     } else {
         if (MessageReaction.count >= starboardConfig.emoteAmount) {
             await sdb.prepare(`DELETE FROM messages WHERE messageID='${MessageReaction.message.id}';`).run();
-            starboardChannel.send(MessageReaction.message.content);
+            return starboardChannel.send(MessageReaction.message.content);
         }
     }
 
