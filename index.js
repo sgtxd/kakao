@@ -9,6 +9,14 @@ const package = require("./package.json");
 const { exit } = require("process");
 const bot = new discord.Client();
 const sdb = new sql(":memory:");
+const puppeteer = require("puppeteer");
+
+
+browser();
+
+async function browser() {
+    browser = await puppeteer.launch({executablePath: 'chromium'});
+}
 
 sdb.prepare(`CREATE TABLE "messages" (	"messageID"	INTEGER UNIQUE,	PRIMARY KEY("messageID"));`).run(); //Database temporarily holds messageIDs for the starboard
 
@@ -43,7 +51,7 @@ for (const file of evfile) {
     let eventFunction = require(`./events/${file}`);
     if (!eventFunction) return;
     let eventName = file.split(".")[0];
-    bot.on(eventName, (...args) => eventFunction.run(bot, discord, db, ...args, sdb));
+    bot.on(eventName, (...args) => eventFunction.run(bot, discord, db, ...args, sdb, browser));
     console.log(`The event: "${eventName}" has been loaded`.verbose);
 }
 console.log("All commands and events that have been found are loaded!".verbose);

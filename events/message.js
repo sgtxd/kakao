@@ -2,7 +2,7 @@
 const discord = require("discord.js");
 const cooldowns = new discord.Collection();
 
-module.exports.run = async (bot, discord, db, message, sdb) => {
+module.exports.run = async (bot, discord, db, message, sdb, browser) => {
     if (message.author.bot || message.channel.type !== 'text') return;
 
     const config = db.prepare('SELECT * FROM guild_settings WHERE guildID = ?').get(message.guild.id); //Get guild settings
@@ -48,7 +48,7 @@ module.exports.run = async (bot, discord, db, message, sdb) => {
         setTimeout(() => timestamps.delete(message.author.id), cooldownAmount);
 
         try {
-            command.run(bot, message, args, db, config);
+            command.run(bot, message, args, db, config, browser);
         } catch (error) {
             console.log(`${error}`.error);
             return message.channel.send('Something happened');
@@ -63,6 +63,8 @@ module.exports.run = async (bot, discord, db, message, sdb) => {
                 for (x = 0; x < messageSplit.length; x++) {
                     if (messageSplit[x].includes("°C")) tempInfo = messageSplit[x].slice(0, -2);
                 }
+                console.log(tempInfo)
+                if(tempInfo == "" || isNaN(tempInfo)) return;
                 let temperature = Math.round(((tempInfo * 1.8) + 32) * 100) / 100;
                 message.channel.send(`${tempInfo} Celsius equals ${temperature} Fahrenheit`);
             }
@@ -71,6 +73,7 @@ module.exports.run = async (bot, discord, db, message, sdb) => {
                 for (x = 0; x < messageSplit.length; x++) {
                     if (messageSplit[x].includes("°F")) tempInfo = messageSplit[x].slice(0, -2);
                 }
+                if(tempInfo == "" || isNaN(tempInfo)) return;
                 let temperature = Math.round(((tempInfo - 32) / 1.8) * 100) / 100;
                 message.channel.send(`${tempInfo} Fahrenheit equals ${temperature} Celsius`);
             }

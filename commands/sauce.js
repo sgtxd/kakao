@@ -6,12 +6,14 @@ const sql = require("better-sqlite3")
 module.exports = {
     name: "sauce",
     description: "Finds some sauce.",
-    cooldown: 1,
+    cooldown: 3,
     guildOnly: false,
     args: true,
     usage: "<sauce>"
 }
-module.exports.run = async (bot, message, args, db, config) => {
+module.exports.run = async (bot, message, args, db, config, browser) => {
+    var start = new Date();
+    var starttime = start.getMilliseconds();
     if (!message.channel.nsfw) return message.channel.send("This command can only be used within NSFW channels!")
 
     if (fs.existsSync("./sauce.db")) {   //Check if the database file exists, if it dosent create a new file and create all tables.
@@ -27,65 +29,65 @@ module.exports.run = async (bot, message, args, db, config) => {
         var sauce = args;
     }
 
-    sauceScraper(sauce);
+    sauceScraper(sauce, browser);
 
-    async function sauceScraper(sauce) {
-
-        const browser = await puppeteer.launch();
+    async function sauceScraper(sauce, browser) {
+        //if on raspberry pi
+        // const browser = await puppeteer.launch({executablePath=`chromium`});
         const page = await browser.newPage();
         await page.goto(`https://nhentai.net/g/${sauce}/`);
 
-        const [e1] = await page.$x(`/html/body/div[2]/div[1]/div[2]/div/h1`)
+        const [e1] = await page.$x(`//*[@id="info"]/h1`)
         var txt = await e1.getProperty(`textContent`);
         const title = await txt.jsonValue();
 
-        const [e2] = await page.$x(`/html/body/div[2]/div[1]/div[1]/a/img`)
+        const [e2] = await page.$x(`//*[@id="cover"]/a/img`)
         var src = await e2.getProperty(`src`);
         const image = await src.jsonValue();
 
-        const [e3] = await page.$x(`//html/body/div[2]/div[1]/div[2]/div/section/div[1]/span`)
+        const [e3] = await page.$x(`//*[@id="tags"]/div[1]/span`)
         var txt = await e3.getProperty(`textContent`);
         const rawParodies = await txt.jsonValue();
         let parodies = rawParodies.replace(/[A-Z0-9]/g, " ").replace(/  +/g, "/").split("/").slice(0, -1).join(", ")
         if (parodies == "") parodies = "No parodies";
 
-        const [e4] = await page.$x(`/html/body/div[2]/div[1]/div[2]/div/section/div[2]/span`)
+        const [e4] = await page.$x(`//*[@id="tags"]/div[2]/span`)
         var txt = await e4.getProperty(`textContent`);
         const rawCharacters = await txt.jsonValue();
         let characters = rawCharacters.replace(/[A-Z0-9]/g, " ").replace(/  +/g, "/").split("/").slice(0, -1).join(", ")
         if (characters == "") characters = "No characters";
 
-        const [e5] = await page.$x(`/html/body/div[2]/div[1]/div[2]/div/section/div[3]/span`)
+        const [e5] = await page.$x(`//*[@id="tags"]/div[3]/span`)
         var txt = await e5.getProperty(`textContent`);
         const rawTags = await txt.jsonValue();
         let tags = rawTags.replace(/[A-Z0-9]/g, " ").replace(/  +/g, "/").split("/").slice(0, -1).join(", ")
         if (tags == "") tags = "No tags";
 
-        const [e6] = await page.$x(`/html/body/div[2]/div[1]/div[2]/div/section/div[4]/span`)
+        const [e6] = await page.$x(`//*[@id="tags"]/div[4]/span`)
         var txt = await e6.getProperty(`textContent`);
         const rawArtists = await txt.jsonValue();
         let artists = rawArtists.replace(/[A-Z0-9]/g, " ").replace(/  +/g, "/").split("/").slice(0, -1).join(", ")
-        if (artists == "") artists = "No artists (what?)";
+        if (artists == "") artists = "No artists";
 
-        const [e7] = await page.$x(`/html/body/div[2]/div[1]/div[2]/div/section/div[5]/span`)
+        const [e7] = await page.$x(`//*[@id="tags"]/div[5]/span`)
         var txt = await e7.getProperty(`textContent`);
         const rawGroups = await txt.jsonValue();
         let groups = rawGroups.replace(/[A-Z0-9]/g, " ").replace(/  +/g, "/").split("/").slice(0, -1).join(", ")
         if (groups == "") groups = "No groups";
 
-        const [e8] = await page.$x(`/html/body/div[2]/div[1]/div[2]/div/section/div[6]/span`)
+        const [e8] = await page.$x(`//*[@id="tags"]/div[6]/span`)
         var txt = await e8.getProperty(`textContent`);
         const rawlang = await txt.jsonValue();
         let languages = rawlang.replace(/[A-Z0-9]/g, " ").replace(/  +/g, "/").split("/").slice(0, -1).join(", ")
         if (languages == "") languages = "No language? (uhhh)";
 
-        const [e9] = await page.$x(`/html/body/div[2]/div[1]/div[2]/div/section/div[7]/span`)
+        const [e9] = await page.$x(`//*[@id="tags"]/div[7]/span`)
         var txt = await e9.getProperty(`textContent`);
         const rawCat = await txt.jsonValue();
         let categories = rawCat.replace(/[A-Z0-9]/g, " ").replace(/  +/g, "/").split("/").slice(0, -1).join(", ")
-        if (categories == "") categories = "No language? (uhhh)";
+        if (categories == "") categories = "No categories? (uhhh)";
 
-        const [e0] = await page.$x(`/html/body/div[2]/div[1]/div[2]/div/section/div[8]/span/a/span`)
+        const [e0] = await page.$x(`//*[@id="tags"]/div[8]/span`)
         var txt = await e0.getProperty(`textContent`);
         const pages = await txt.jsonValue();
         if (pages == "") pages = "No pages?? (uhhhhhhhhhhhhhhhhh)";
@@ -105,7 +107,7 @@ module.exports.run = async (bot, message, args, db, config) => {
 
         message.channel.send(embed);
 
-        browser.close();
+        page.close();
 
         const config = db.prepare(`SELECT * FROM sauce WHERE id = ?`).get(sauce); //Get guild settings
         if (!config) {
